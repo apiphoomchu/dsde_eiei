@@ -22,8 +22,7 @@ class ResearchDoc(BaseDoc):
     keywords: Optional[str] = None
     date: Optional[str] = None
     pdf: Optional[str] = None
-    embedding: Optional[NdArray[384]] = None  # Adjust the dimension if your model differs
-
+    embedding: Optional[NdArray[384]] = None  # Adjust dimensions based on your model
 
 # Initialize PySpark session
 spark = SparkSession.builder \
@@ -35,12 +34,12 @@ MODEL_NAME = "sentence-transformers/all-MiniLM-L6-v2"
 tokenizer = AutoTokenizer.from_pretrained(MODEL_NAME)
 model = AutoModel.from_pretrained(MODEL_NAME)
 
-# Initialize vectordb
+# Initialize VectorDB
 db = HNSWVectorDB[ResearchDoc](workspace='./vectordb_workspace')
 
 def generate_embedding(text):
     """Generate embeddings for a given text."""
-    if text is None:
+    if not text:
         text = ""
     inputs = tokenizer(text, return_tensors="pt", padding=True, truncation=True, max_length=512)
     with torch.no_grad():
@@ -50,9 +49,9 @@ def generate_embedding(text):
 
 def generate_hash(title, abstract):
     """Generate a unique hash for the document based on title and abstract."""
-    if title is None:
+    if not title:
         title = ""
-    if abstract is None:
+    if not abstract:
         abstract = ""
     return hashlib.sha256(f"{title}{abstract}".encode()).hexdigest()
 
@@ -60,7 +59,7 @@ def generate_hash(title, abstract):
 generate_embedding_udf = udf(lambda text: generate_embedding(text).tolist(), ArrayType(FloatType()))
 generate_hash_udf = udf(generate_hash, StringType())
 
-def scrape_arxiv_data(start=0, size=200, total_journals=200):
+def scrape_arxiv_data(start=0, size=200, total_journals=300):
     """Scrape arXiv data."""
     articles = []
     while start < total_journals:
@@ -106,18 +105,13 @@ def scrape_arxiv_data(start=0, size=200, total_journals=200):
     return articles
 
 def process_data(data):
-    # Create a PySpark DataFrame directly from data (list of dicts)
+    """Process scraped data to generate embeddings and store it in the VectorDB."""
     df = spark.createDataFrame(data)
-
-    print(data)
-
-    # Add embeddings and unique hash to the DataFrame
     df_with_embeddings = df \
         .withColumn("embedding", generate_embedding_udf(df["abstract"])) \
         .withColumn("hash", generate_hash_udf(df["title"], df["abstract"])) \
         .select("title", "keywords", "authors", "abstract", "date", "pdf", "embedding", "hash")
 
-    # Collect data for verification and insertion
     rows = df_with_embeddings.collect()
 
     for row in rows:
@@ -129,6 +123,14 @@ def process_data(data):
         pdf = row.pdf
         embedding = row.embedding
         doc_hash = row.hash
+        embedding = np.array(row.embedding)
+
+        # Check duplicates by embedding similarity
+        query = ResearchDoc(embedding=embedding)
+        similar_docs = db.search(query, limit=1)
+        if similar_docs.matches[0].title == title:
+            print(f"Skipping duplicate document: {title}")
+            continue
 
         doc = ResearchDoc(
             id=doc_hash,
@@ -150,15 +152,10 @@ def run_pipeline_forever():
     while True:
         print("Scraping new data from arXiv...")
         data = scrape_arxiv_data()
-
         if data:
             print("Processing data...")
             process_data(data)
-        else:
-            print("No new data found, sleeping...")
-
-        # Sleep for a specific interval before the next batch
-        time.sleep(86400)  # 24 hours
+        time.sleep(10)
 
 if __name__ == "__main__":
     try:

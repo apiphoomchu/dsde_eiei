@@ -42,4 +42,4 @@ results = db.search(query, limit=10)
 
 # for result in results.matches:
 #     print(result)
-print(results.matches[0]) # This is first result
+print(results.matches, results.scores) # This is first result
