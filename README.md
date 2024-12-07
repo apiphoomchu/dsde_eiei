@@ -13,5 +13,9 @@ pip install -r requirements.txt
 # Prepare the data -> create "data" folder & Put the data inside "data" folder
 mkdir data
 
-# Run the project
+# Please run startup.py first to generate the vectordb. beaware that it will take a while
+python startup.py
+
+# and then you can run the pipeline.py
+python pipeline.py
 ```

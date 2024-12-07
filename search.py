@@ -37,9 +37,9 @@ model = AutoModel.from_pretrained(MODEL_NAME)
 db = HNSWVectorDB[ResearchDoc](workspace='./vectordb_workspace')
 
 # Search for documents
-query = ResearchDoc(embedding=generate_embedding("Deep-Unrolling Multidimensional Harmonic Retrieval Algorithms on Neuromorphic Hardware"))
+query = ResearchDoc(embedding=generate_embedding("Rare coordination behavior of triethanolamine ligand in [Cu(H3tea)2](3,4-dimethoxycinnamate)2·2H2O: Synthesis, characterization, single crystal X-ray structure determination, Hirshfeld calculation and molecular docking studies"))
 results = db.search(query, limit=10)
 
 # for result in results.matches:
 #     print(result)
-print(results.matches, results.scores) # This is first result
+print(results.matches[0], results.scores[0]) # This is first result
