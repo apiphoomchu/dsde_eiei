@@ -1,3 +1,4 @@
 /data/*
 .venv/*
 arxiv_articles.csv
+/vectordb_workspace/*
