@@ -110,7 +110,7 @@ def process_data(data):
     df_with_embeddings = df \
         .withColumn("embedding", generate_embedding_udf(df["abstract"])) \
         .withColumn("hash", generate_hash_udf(df["title"], df["abstract"])) \
-        .select("title", "keywords", "authors", "abstract", "date", "embedding", "hash")
+        .select("title", "keywords", "authors", "abstract", "date", "pdf", "embedding", "hash")
 
     rows = df_with_embeddings.collect()
 
@@ -121,7 +121,6 @@ def process_data(data):
         abstract = row.abstract
         date = row.date
         pdf = row.pdf
-        embedding = row.embedding
         doc_hash = row.hash
         embedding = np.array(row.embedding)
 
