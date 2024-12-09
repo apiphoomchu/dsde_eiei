@@ -8,13 +8,11 @@ WORKDIR /app
 RUN apt-get update && apt-get install -y \
     wget \
     software-properties-common \
-    && wget https://download.oracle.com/java/17/latest/jdk-17_linux-x64_bin.deb -O jdk17.deb \
-    && apt-get install -y ./jdk17.deb \
-    && rm jdk17.deb \
-    && rm -rf /var/lib/apt/lists/*
+    && apt-get install openjdk-8-jdk-headless \
+    && apt-get clean
 
 # Set JAVA_HOME
-ENV JAVA_HOME /usr/lib/jvm/jdk-17
+ENV JAVA_HOME /usr/lib/jvm/java-8-openjdk-amd64
 
 # Install Python dependencies
 COPY requirements.txt .
@@ -39,7 +37,7 @@ ENV SPARK_HOME=/opt/spark
 ENV PATH=$PATH:$SPARK_HOME/bin
 
 # Install Spark
-RUN wget https://downloads.apache.org/spark/spark-3.2.1/spark-3.2.1-bin-hadoop3.2.tgz \
-    && tar -xzf spark-3.2.1-bin-hadoop3.2.tgz \
-    && mv spark-3.2.1-bin-hadoop3.2 /opt/spark \
-    && rm spark-3.2.1-bin-hadoop3.2.tgz
+RUN wget https://dlcdn.apache.org/spark/spark-3.4.4/spark-3.4.4-bin-hadoop3.tgz \
+    && tar -xzf spark-3.4.4-bin-hadoop3.tgz \
+    && mv spark-3.4.4-bin-hadoop3 /opt/spark \
+    && rm spark-3.4.4-bin-hadoop3.tgz
