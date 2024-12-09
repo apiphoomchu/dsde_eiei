@@ -1,34 +1,31 @@
-version: "3.13"
+version: '3.13'
 
 services:
-  vectordb:
-    build:
-      context: .
-      dockerfile: Dockerfile.vectordb
-    container_name: vectordb_service
+  data-pipeline:
+    build: .
     volumes:
-      - vectordb_data:/app/vectordb_workspace
-    ports:
-      - "8001:8001" # Optional, remove if vectordb doesn't expose an HTTP interface
+      - ./data:/app/data
+      - ./vectordb_workspace:/app/vectordb_workspace
+    command: python pipeline.py
+    restart: always
 
-  pipeline:
-    build:
-      context: .
-      dockerfile: Dockerfile.pipelines
-    container_name: pipeline_service
-    depends_on:
-      - vectordb
+  data-initialization:
+    build: .
+    volumes:
+      - ./data:/app/data
+      - ./vectordb_workspace:/app/vectordb_workspace
+    command: python startup.py
+    restart: on-failure
 
-  server:
-    build:
-      context: .
-      dockerfile: Dockerfile.server
-    container_name: fastapi_service
-    command: uvicorn api:app --host 0.0.0.0 --port 8000 --reload
+  api:
+    build: .
     ports:
       - "8000:8000"
-    depends_on:
-      - vectordb
+    volumes:
+      - ./vectordb_workspace:/app/vectordb_workspace
+    command: uvicorn api:app --host 0.0.0.0 --port 8000
+    restart: always
 
-volumes:
-  vectordb_data:
+networks:
+  default:
+    driver: bridge

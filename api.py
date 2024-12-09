@@ -2,6 +2,7 @@
 from fastapi import FastAPI
 from search import *
 # Search api
+
 app = FastAPI(debug=True)
 
 @app.get("/search/{query}")
