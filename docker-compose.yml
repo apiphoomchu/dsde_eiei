@@ -7,14 +7,14 @@ services:
       dockerfile: Dockerfile.vectordb
     container_name: vectordb_service
     volumes:
-      - ./vectordb_workspace:/app/vectordb_workspace
+      - vectordb_data:/app/vectordb_workspace
     ports:
-      - "8001:8001" # Change or remove if vectordb doesn't expose HTTP
+      - "8001:8001" # Optional, remove if vectordb doesn't expose an HTTP interface
 
   pipeline:
     build:
       context: .
-      dockerfile: Dockerfile.pipeline
+      dockerfile: Dockerfile.pipelines
     container_name: pipeline_service
     depends_on:
       - vectordb
@@ -29,3 +29,6 @@ services:
       - "8000:8000"
     depends_on:
       - vectordb
+
+volumes:
+  vectordb_data:
