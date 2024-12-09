@@ -6,12 +6,15 @@ WORKDIR /app
 
 # Install system dependencies
 RUN apt-get update && apt-get install -y \
-    openjdk-11-jre-headless \
     wget \
+    software-properties-common \
+    && wget https://download.oracle.com/java/17/latest/jdk-17_linux-x64_bin.deb -O jdk17.deb \
+    && apt-get install -y ./jdk17.deb \
+    && rm jdk17.deb \
     && rm -rf /var/lib/apt/lists/*
 
 # Set JAVA_HOME
-ENV JAVA_HOME /usr/lib/jvm/java-11-openjdk-amd64
+ENV JAVA_HOME /usr/lib/jvm/jdk-17
 
 # Install Python dependencies
 COPY requirements.txt .
