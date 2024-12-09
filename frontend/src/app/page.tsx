@@ -95,7 +95,8 @@ export default function Home() {
 						<DialogHeader>
 							<DialogTitle>{selectedPaper?.title}</DialogTitle>
 							<DialogDescription>
-								Published on {selectedPaper?.date}
+								{selectedPaper?.date &&
+									`Published on ${selectedPaper?.date.replace(/;$/, "")}`}
 							</DialogDescription>
 						</DialogHeader>
 						<div className="grid grid-cols-2 gap-6 mt-6 h-full overflow-hidden">
