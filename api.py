@@ -1,9 +1,18 @@
 ##### use this command to run the api: uvicorn api:app --reload
 from fastapi import FastAPI
+from fastapi.middleware.cors import CORSMiddleware
 from search import *
 # Search api
 
 app = FastAPI(debug=True)
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],  # Adjust this to your allowed origins (e.g., ["http://localhost:3000"])
+    allow_credentials=True,
+    allow_methods=["*"],  # Adjust this to your allowed HTTP methods
+    allow_headers=["*"],  # Adjust this to your allowed headers
+)
 
 @app.get("/search/{query}")
 async def search(query: str):
