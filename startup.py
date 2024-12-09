@@ -28,6 +28,7 @@ class ResearchDoc(BaseDoc):
 
 spark = SparkSession.builder \
     .appName("StartupDataPipeline") \
+    .master("spark://spark-master:7077") \
     .getOrCreate()
 
 MODEL_NAME = "sentence-transformers/all-MiniLM-L6-v2"

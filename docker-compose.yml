@@ -1,31 +1,80 @@
-version: '3.13'
+version: "3.13"
 
 services:
-  data-pipeline:
-    build: .
+  # Spark Master Node
+  spark-master:
+    image: bitnami/spark:latest
+    container_name: spark-master
+    environment:
+      - SPARK_MODE=master
+      - SPARK_MASTER_HOST=spark-master
+      - SPARK_MASTER_PORT=7077
+    ports:
+      - "8080:8080"  # Web UI for the master node
+      - "7077:7077"  # Spark master communication
     volumes:
-      - ./data:/app/data
-      - ./vectordb_workspace:/app/vectordb_workspace
-    command: python pipeline.py
-    restart: always
+      - spark-data:/bitnami/spark
 
-  data-initialization:
-    build: .
+  # Spark Worker Node
+  spark-worker-1:
+    image: bitnami/spark:latest
+    container_name: spark-worker-1
+    environment:
+      - SPARK_MODE=worker
+      - SPARK_MASTER_URL=spark://spark-master:7077
+    depends_on:
+      - spark-master
     volumes:
-      - ./data:/app/data
-      - ./vectordb_workspace:/app/vectordb_workspace
+      - spark-data:/bitnami/spark
+
+  spark-worker-2:
+    image: bitnami/spark:latest
+    container_name: spark-worker-2
+    environment:
+      - SPARK_MODE=worker
+      - SPARK_MASTER_URL=spark://spark-master:7077
+    depends_on:
+      - spark-master
+    volumes:
+      - spark-data:/bitnami/spark
+
+  # Vector Database
+  vectordb:
+    build:
+      context: .
+      dockerfile: Dockerfile.vectordb
+    container_name: vectordb_service
     command: python startup.py
-    restart: on-failure
+    volumes:
+      - vectordb_data:/app/vectordb_workspace
+    depends_on:
+      - spark-master
 
-  api:
-    build: .
+  # Pipeline Service
+  pipeline:
+    build:
+      context: .
+      dockerfile: Dockerfile.pipelines
+    container_name: pipeline_service
+    volumes:
+      - vectordb_data:/app/vectordb_workspace
+    depends_on:
+      - spark-master
+      - vectordb
+
+  # FastAPI Server
+  server:
+    build:
+      context: .
+      dockerfile: Dockerfile.server
+    container_name: fastapi_service
+    command: uvicorn api:app --host 0.0.0.0 --port 8000 --reload
     ports:
       - "8000:8000"
-    volumes:
-      - ./vectordb_workspace:/app/vectordb_workspace
-    command: uvicorn api:app --host 0.0.0.0 --port 8000
-    restart: always
+    depends_on:
+      - vectordb
+      - spark-master
 
-networks:
-  default:
-    driver: bridge
+volumes:
+  spark-data:
+  vectordb_data:

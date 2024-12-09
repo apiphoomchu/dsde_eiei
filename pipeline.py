@@ -27,6 +27,7 @@ class ResearchDoc(BaseDoc):
 # Initialize PySpark session
 spark = SparkSession.builder \
     .appName("ArxivEmbeddingPipeline") \
+    .master("spark://spark-master:7077") \
     .getOrCreate()
 
 # Hugging Face model and tokenizer
