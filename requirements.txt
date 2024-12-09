@@ -119,7 +119,6 @@ starlette==0.41.3
 sympy==1.13.1
 threadpoolctl==3.5.0
 tokenizers==0.21.0
-torch==2.6.0.dev20241207
 tornado==6.4.2
 tqdm==4.67.1
 traitlets==5.14.3
