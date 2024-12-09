@@ -2,7 +2,8 @@ import React, { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { Send, Loader2 } from "lucide-react";
+import { Send, Loader2, AlertCircle } from "lucide-react";
+import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Paper, Message } from "@/types/types";
 
 export interface Props {
@@ -13,6 +14,7 @@ export const ChatInterface = ({ paper }: Props) => {
 	const [messages, setMessages] = useState<Message[]>([]);
 	const [newMessage, setNewMessage] = useState("");
 	const [isLoading, setIsLoading] = useState(false);
+	const [error, setError] = useState<string | null>(null);
 
 	const handleSendMessage = async () => {
 		if (!newMessage.trim()) return;
@@ -25,6 +27,7 @@ export const ChatInterface = ({ paper }: Props) => {
 		setMessages((prev) => [...prev, userMessage]);
 		setNewMessage("");
 		setIsLoading(true);
+		setError(null);
 
 		try {
 			const response = await fetch("/api/chat", {
@@ -38,6 +41,11 @@ export const ChatInterface = ({ paper }: Props) => {
 				}),
 			});
 
+			if (!response.ok) {
+				const errorData = await response.json();
+				throw new Error(errorData.error || "Failed to get response");
+			}
+
 			const data = await response.json();
 
 			setMessages((prev) => [
@@ -49,6 +57,11 @@ export const ChatInterface = ({ paper }: Props) => {
 			]);
 		} catch (error) {
 			console.error("Error:", error);
+			setError(
+				error instanceof Error
+					? error.message
+					: "An error occurred while sending your message"
+			);
 		} finally {
 			setIsLoading(false);
 		}
@@ -81,6 +94,14 @@ export const ChatInterface = ({ paper }: Props) => {
 					</div>
 				)}
 			</ScrollArea>
+
+			{error && (
+				<Alert variant="destructive" className="mb-4">
+					<AlertCircle className="h-4 w-4" />
+					<AlertDescription>{error}</AlertDescription>
+				</Alert>
+			)}
+
 			<div className="flex gap-2">
 				<Textarea
 					placeholder="Ask questions about this paper..."

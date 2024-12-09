@@ -1,5 +1,3 @@
-// app/page.tsx
-
 "use client";
 
 import React, { useEffect, useState } from "react";
@@ -58,7 +56,7 @@ export default function Home() {
 		};
 
 		// Debounce the search to avoid too many requests
-		const timeoutId = setTimeout(fetchSearchResults, 300);
+		const timeoutId = setTimeout(fetchSearchResults, 1000);
 
 		return () => clearTimeout(timeoutId);
 	}, [searchTerm]);

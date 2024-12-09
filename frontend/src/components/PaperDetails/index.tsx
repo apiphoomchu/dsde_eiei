@@ -5,7 +5,6 @@ import { FileText, Maximize2 } from "lucide-react";
 import { PDFDialog } from "../PDFDialog";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Paper } from "@/types/types";
-import Latex from "react-latex-next";
 import { parseString } from "@/utils";
 
 interface Props {
@@ -20,9 +19,7 @@ export const PaperDetails = ({ paper }: Props) => {
 			<div className="space-y-6">
 				<div>
 					<h3 className="text-lg font-semibold">Abstract</h3>
-					<p className="mt-2 text-gray-600 text-wrap">
-						<Latex>{paper.abstract}</Latex>
-					</p>
+					<p className="mt-2 text-gray-600 text-wrap">{paper.abstract}</p>
 				</div>
 
 				<div>

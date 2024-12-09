@@ -11,7 +11,9 @@ export interface Props {
 export const SearchBar = ({ value, onChange, isLoading }: Props) => {
 	return (
 		<div className="space-y-4">
-			<h1 className="text-4xl font-bold text-center">Quantum Physics Papers</h1>
+			<h1 className="text-4xl font-bold text-center">
+				Research Papers Browser
+			</h1>
 			<Input
 				placeholder="Search papers by title..."
 				className="max-w-2xl mx-auto"
