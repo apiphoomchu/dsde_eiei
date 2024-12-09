@@ -2,11 +2,11 @@ FROM python:3.13
 
 
 RUN apt-get update && apt-get install -y \
-    openjdk-11-jdk \
+    openjdk-22-jdk-headless \
     curl \
     && apt-get clean
 
-ENV JAVA_HOME="/usr/lib/jvm/java-11-openjdk-amd64"
+ENV JAVA_HOME="/usr/lib/jvm/java-22-openjdk-amd64"
 ENV PATH="$JAVA_HOME/bin:$PATH"
 
 ENV SPARK_MASTER_URL="spark://spark-master:7077"
