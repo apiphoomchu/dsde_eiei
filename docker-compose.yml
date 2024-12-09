@@ -1,18 +1,31 @@
 version: "3.13"
 
 services:
-  app:
+  vectordb:
     build:
       context: .
-      dockerfile: Dockerfile
-    container_name: fastapi_app
-    command: >
-      bash -c "
-      python startup.py &&
-      python pipeline.py &
-      uvicorn api:app --host 0.0.0.0 --port 8000 --reload
-      "
+      dockerfile: Dockerfile.vectordb
+    container_name: vectordb_service
+    volumes:
+      - ./vectordb_workspace:/app/vectordb_workspace
+    ports:
+      - "8001:8001" # Change or remove if vectordb doesn't expose HTTP
+
+  pipeline:
+    build:
+      context: .
+      dockerfile: Dockerfile.pipeline
+    container_name: pipeline_service
+    depends_on:
+      - vectordb
+
+  server:
+    build:
+      context: .
+      dockerfile: Dockerfile.server
+    container_name: fastapi_service
+    command: uvicorn api:app --host 0.0.0.0 --port 8000 --reload
     ports:
       - "8000:8000"
-    volumes:
-      - .:/app
+    depends_on:
+      - vectordb
