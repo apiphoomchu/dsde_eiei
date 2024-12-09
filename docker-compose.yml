@@ -1,4 +1,4 @@
-version: "3.13"
+version: "3.12"
 
 services:
   # Spark Master Node
