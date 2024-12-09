@@ -1,0 +1,8 @@
+# Use the Bitnami Spark image as the base
+FROM bitnami/spark:latest
+
+# Set the working directory inside the container
+WORKDIR /app
+
+# Install Python dependencies from requirements.txt
+RUN pip install --no-cache-dir transformers pandas numpy torch
