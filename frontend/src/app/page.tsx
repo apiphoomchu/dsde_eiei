@@ -15,6 +15,9 @@ import { ChatInterface } from "@/components/ChatInterface";
 import { SearchBar } from "@/components/SearchBar";
 import { Paper } from "@/types/types";
 import Latex from "react-latex";
+import { Button } from "@/components/ui/button";
+import { ArrowRight } from "lucide-react";
+import Link from "next/link";
 
 export default function Home() {
 	const [searchTerm, setSearchTerm] = useState("");
@@ -72,8 +75,15 @@ export default function Home() {
 	);
 
 	return (
-		<div className="min-h-screen bg-gray-50 p-8">
-			<div className="max-w-6xl mx-auto space-y-8">
+		<div className="min-h-screen bg-gray-50 p-8 flex flex-col items-end pt-4">
+			<Link href={process.env.NEXT_PUBLIC_VISUALIZATION_URL || ""}>
+				<Button className="font-bold gap-1">
+					Visualization
+					<ArrowRight />
+				</Button>
+			</Link>
+
+			<div className="max-w-6xl mx-auto space-y-8 mt-4">
 				<SearchBar
 					value={searchTerm}
 					onChange={setSearchTerm}
