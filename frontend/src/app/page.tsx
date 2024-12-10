@@ -20,7 +20,7 @@ import { ArrowRight } from "lucide-react";
 import Link from "next/link";
 
 export default function Home() {
-  const [searchTerm, setSearchTerm] = useState("");
+  const [searchTerm, setSearchTerm] = useState("machine learning");
   const [selectedPaper, setSelectedPaper] = useState<Paper | null>(null);
   const [papers, setPapers] = useState<Paper[]>([]);
   const [loading, setLoading] = useState(false);
