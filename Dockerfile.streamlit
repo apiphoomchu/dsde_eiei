@@ -6,6 +6,6 @@ WORKDIR /app
 COPY streamlit_data/ .
 COPY streamlit.py .
 
-RUN pip install --no-cache-dir streamlit pandas numpy matplotlib scikit-learn networkx plotly community
+RUN pip install --no-cache-dir streamlit pandas numpy matplotlib scikit-learn networkx plotly community python-louvain
 
 
