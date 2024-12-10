@@ -3,14 +3,9 @@ FROM python:3.12-bullseye
 WORKDIR /app
 
 
-COPY data/ data/
+COPY streamlit_data/ .
 COPY streamlit.py .
-COPY streamlit_data.py .
 
-RUN pip install --no-cache-dir streamlit pandas numpy matplotlib scikit-learn networkx plotly bs4 
+RUN pip install --no-cache-dir streamlit pandas numpy matplotlib scikit-learn networkx plotly community
 
-RUN python streamlit_data.py
 
-ENV PATH="/venv/bin:$PATH"
-
-CMD ["bash", "-c", "streamlit run streamlit.py"]

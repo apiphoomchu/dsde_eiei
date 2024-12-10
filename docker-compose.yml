@@ -1,39 +1,26 @@
 version: "3.8"
 
 services:
-  # Spark Master Node
-  spark-master:
-    image: bitnami/spark:latest
-    container_name: spark-master
-    environment:
-      - SPARK_MODE=master
-      - SPARK_MASTER_HOST=spark-master
-      - SPARK_MASTER_PORT=7077
-    ports:
-      - "8080:8080"  # Web UI for the master node
-      - "7077:7077"  # Spark master communication
-    volumes:
-      - spark-data:/bitnami/spark
+  # # Spark Master Node
+  # spark-master:
+  #   image: bitnami/spark:latest
+  #   container_name: spark-master
+  #   environment:
+  #     - SPARK_MODE=master
+  #     - SPARK_MASTER_HOST=spark-master
+  #     - SPARK_MASTER_PORT=7077
+  #   ports:
+  #     - "8080:8080"  # Web UI for the master node
+  #     - "7077:7077"  # Spark master communication
+  #   volumes:
+  #     - spark-data:/bitnami/spark
 
-  # Spark Worker Node
-  spark-worker-1:
-    build :
-      context: .
-      dockerfile: Dockerfile.spark
-    container_name: spark-worker-1
-    environment:
-      - SPARK_MODE=worker
-      - SPARK_MASTER_URL=spark://spark-master:7077
-    depends_on:
-      - spark-master
-    volumes:
-      - spark-data:/bitnami/spark
-
-  # spark-worker-2:
+  # # Spark Worker Node
+  # spark-worker-1:
   #   build :
   #     context: .
   #     dockerfile: Dockerfile.spark
-  #   container_name: spark-worker-2
+  #   container_name: spark-worker-1
   #   environment:
   #     - SPARK_MODE=worker
   #     - SPARK_MASTER_URL=spark://spark-master:7077
@@ -42,51 +29,64 @@ services:
   #   volumes:
   #     - spark-data:/bitnami/spark
 
-  # Vector Database
-  vectordb:
-    build:
-      context: .
-      dockerfile: Dockerfile.vectordb
-    container_name: vectordb_service
-    command: python startup.py
-    volumes:
-      - vectordb_data:/app/vectordb_workspace
-    depends_on:
-      - spark-master
+  # # spark-worker-2:
+  # #   build :
+  # #     context: .
+  # #     dockerfile: Dockerfile.spark
+  # #   container_name: spark-worker-2
+  # #   environment:
+  # #     - SPARK_MODE=worker
+  # #     - SPARK_MASTER_URL=spark://spark-master:7077
+  # #   depends_on:
+  # #     - spark-master
+  # #   volumes:
+  # #     - spark-data:/bitnami/spark
 
-  # Pipeline Service
-  pipeline:
-    build:
-      context: .
-      dockerfile: Dockerfile.pipelines
-    container_name: pipeline_service
-    volumes:
-      - vectordb_data:/app/vectordb_workspace
-    depends_on:
-      - spark-master
-      - vectordb
+  # # Vector Database
+  # vectordb:
+  #   build:
+  #     context: .
+  #     dockerfile: Dockerfile.vectordb
+  #   container_name: vectordb_service
+  #   command: python startup.py
+  #   volumes:
+  #     - vectordb_data:/app/vectordb_workspace
+  #   depends_on:
+  #     - spark-master
 
-  # FastAPI Server
-  server:
-    build:
-      context: .
-      dockerfile: Dockerfile.server
-    container_name: fastapi_service
-    command: uvicorn api:app --host 0.0.0.0 --port 8000 --reload
-    ports:
-      - "8000:8000"
-    volumes:
-      - vectordb_data:/app/vectordb_workspace
-    depends_on:
-      - vectordb
-      - spark-master
+  # # Pipeline Service
+  # pipeline:
+  #   build:
+  #     context: .
+  #     dockerfile: Dockerfile.pipelines
+  #   container_name: pipeline_service
+  #   volumes:
+  #     - vectordb_data:/app/vectordb_workspace
+  #   depends_on:
+  #     - spark-master
+  #     - vectordb
+
+  # # FastAPI Server
+  # server:
+  #   build:
+  #     context: .
+  #     dockerfile: Dockerfile.server
+  #   container_name: fastapi_service
+  #   command: uvicorn api:app --host 0.0.0.0 --port 8000 --reload
+  #   ports:
+  #     - "8000:8000"
+  #   volumes:
+  #     - vectordb_data:/app/vectordb_workspace
+  #   depends_on:
+  #     - vectordb
+  #     - spark-master
 
   streamlit : 
     build:
       context: .
       dockerfile: Dockerfile.streamlit
     container_name: streamlit_service
-    command: streamlit run app.py
+    command: streamlit run streamlit.py
     ports:
       - "8501:8501"
     volumes:
