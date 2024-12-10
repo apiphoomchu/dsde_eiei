@@ -81,6 +81,18 @@ services:
       - vectordb
       - spark-master
 
+  streamlit : 
+    build:
+      context: .
+      dockerfile: Dockerfile.streamlit
+    container_name: streamlit_service
+    command: streamlit run app.py
+    ports:
+      - "8501:8501"
+    volumes:
+      - vectordb_data:/app/vectordb_workspace
+
+
 volumes:
   spark-data:
   vectordb_data:
