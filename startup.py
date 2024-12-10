@@ -85,7 +85,7 @@ def process_file(file_path):
         return {"file": file_path, "error": str(e)}
 
 df = pd.read_csv("streamlit_data/final_data.csv")
-batch_size = 1000
+batch_size = 200
 
 # Convert Pandas DataFrame to Spark DataFrame in batches
 num_batches = len(df) // batch_size + (1 if len(df) % batch_size != 0 else 0)
