@@ -78,7 +78,7 @@ with tab1:
 with tab2 :
     st.title("Arxiv Data")
 
-    data = pd.read_csv('arxiv_articles.csv')
+    data = pd.read_csv('arxiv.csv')
 
     def create_author_network_from_df(df):
         G = nx.Graph()
