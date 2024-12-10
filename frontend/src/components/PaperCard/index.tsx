@@ -11,6 +11,7 @@ import { Badge } from "@/components/ui/badge";
 import { Calendar, FileText } from "lucide-react";
 import { Paper } from "@/types/types";
 import { parseString } from "@/utils";
+import Latex from "react-latex";
 
 interface Props {
 	paper: Paper;
@@ -26,7 +27,9 @@ export const PaperCard = ({ paper, onSelect }: Props) => {
 			<CardHeader>
 				<div className="flex justify-between items-start">
 					<div className="space-y-1">
-						<CardTitle className="text-xl">{paper.title}</CardTitle>
+						<CardTitle className="text-xl">
+							<Latex>{paper.title}</Latex>
+						</CardTitle>
 						<CardDescription className="text-sm">
 							{parseString(paper.authors).join(", ")}
 						</CardDescription>
@@ -40,7 +43,9 @@ export const PaperCard = ({ paper, onSelect }: Props) => {
 				</div>
 			</CardHeader>
 			<CardContent>
-				<p className="text-gray-600 line-clamp-3">{paper.abstract}</p>
+				<p className="text-gray-600 line-clamp-3">
+					<Latex>{paper.abstract}</Latex>
+				</p>
 			</CardContent>
 			<CardFooter className="flex justify-between items-center">
 				<div className="flex gap-2 flex-wrap">

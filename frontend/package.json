@@ -20,6 +20,7 @@
     "openai": "^4.76.0",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
+    "react-latex": "^2.0.0",
     "react-pdf": "^9.1.1",
     "tailwind-merge": "^2.5.5",
     "tailwindcss-animate": "^1.0.7"
@@ -28,6 +29,7 @@
     "@types/node": "^20",
     "@types/react": "^19",
     "@types/react-dom": "^19",
+    "@types/react-latex": "^2.0.3",
     "eslint": "^8",
     "eslint-config-next": "15.0.4",
     "postcss": "^8",

@@ -14,6 +14,7 @@ import { PaperDetails } from "@/components/PaperDetails";
 import { ChatInterface } from "@/components/ChatInterface";
 import { SearchBar } from "@/components/SearchBar";
 import { Paper } from "@/types/types";
+import Latex from "react-latex";
 
 export default function Home() {
 	const [searchTerm, setSearchTerm] = useState("");
@@ -32,7 +33,9 @@ export default function Home() {
 
 			try {
 				const response = await fetch(
-					`http://127.0.0.1:8000/search/${encodeURIComponent(searchTerm)}`,
+					`${process.env.NEXT_PUBLIC_API_ENDPOINT}/search/${encodeURIComponent(
+						searchTerm
+					)}`,
 					{
 						method: "GET",
 						headers: {
@@ -93,13 +96,15 @@ export default function Home() {
 				>
 					<DialogContent className="max-w-4xl h-[80vh]">
 						<DialogHeader>
-							<DialogTitle>{selectedPaper?.title}</DialogTitle>
+							<DialogTitle>
+								<Latex>{selectedPaper?.title}</Latex>
+							</DialogTitle>
 							<DialogDescription>
 								{selectedPaper?.date &&
 									`Published on ${selectedPaper?.date.replace(/;$/, "")}`}
 							</DialogDescription>
 						</DialogHeader>
-						<div className="grid grid-cols-2 gap-6 mt-6 h-full overflow-hidden">
+						<div className="grid grid-cols-2 gap-6 h-full overflow-hidden">
 							<ScrollArea className="w-full">
 								{selectedPaper && <PaperDetails paper={selectedPaper} />}
 							</ScrollArea>

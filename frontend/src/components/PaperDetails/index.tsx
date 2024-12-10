@@ -6,6 +6,7 @@ import { PDFDialog } from "../PDFDialog";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Paper } from "@/types/types";
 import { parseString } from "@/utils";
+import Latex from "react-latex";
 
 interface Props {
 	paper: Paper;
@@ -19,7 +20,9 @@ export const PaperDetails = ({ paper }: Props) => {
 			<div className="space-y-6">
 				<div>
 					<h3 className="text-lg font-semibold">Abstract</h3>
-					<p className="mt-2 text-gray-600 text-wrap">{paper.abstract}</p>
+					<p className="mt-2 text-gray-600 text-wrap">
+						<Latex>{paper.abstract}</Latex>
+					</p>
 				</div>
 
 				<div>
