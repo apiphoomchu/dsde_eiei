@@ -1,7 +1,6 @@
 import React, { useState } from "react";
 import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
-import { FileText, Maximize2 } from "lucide-react";
+import { FileText } from "lucide-react";
 import { PDFDialog } from "../PDFDialog";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Paper } from "@/types/types";
