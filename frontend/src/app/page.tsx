@@ -24,6 +24,8 @@ export default function Home() {
   const [selectedPaper, setSelectedPaper] = useState<Paper | null>(null);
   const [papers, setPapers] = useState<Paper[]>([]);
   const [loading, setLoading] = useState(false);
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 5;
 
   useEffect(() => {
     const fetchSearchResults = async () => {
@@ -51,6 +53,7 @@ export default function Home() {
 
         const data = await response.json();
         setPapers(data.results);
+        setCurrentPage(1);
       } catch (error) {
         console.error("Search failed:", error);
         setPapers([]);
@@ -59,18 +62,28 @@ export default function Home() {
       }
     };
 
-    // Debounce the search to avoid too many requests
     const timeoutId = setTimeout(fetchSearchResults, 1000);
 
     return () => clearTimeout(timeoutId);
   }, [searchTerm]);
 
-  const filteredPapers = papers.filter(
-    (paper) =>
-      paper.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      paper.abstract.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      paper.authors.toLowerCase().includes(searchTerm.toLowerCase())
-  );
+  const startIndex = (currentPage - 1) * itemsPerPage;
+  const endIndex = startIndex + itemsPerPage;
+  const currentPapers = papers.slice(startIndex, endIndex);
+
+  const totalPages = Math.ceil(papers.length / itemsPerPage);
+
+  const handleNextPage = () => {
+    if (currentPage < totalPages) {
+      setCurrentPage((prev) => prev + 1);
+    }
+  };
+
+  const handlePreviousPage = () => {
+    if (currentPage > 1) {
+      setCurrentPage((prev) => prev - 1);
+    }
+  };
 
   return (
     <div className="min-h-screen bg-gray-50 p-8 flex flex-col items-end pt-4">
@@ -89,13 +102,34 @@ export default function Home() {
         />
 
         <div className="grid gap-6">
-          {filteredPapers.map((paper) => (
+          {currentPapers.map((paper) => (
             <PaperCard
               key={paper.id}
               paper={paper}
               onSelect={setSelectedPaper}
             />
           ))}
+        </div>
+
+        {/* Pagination Controls */}
+        <div className="flex justify-between items-center mt-4">
+          <Button
+            onClick={handlePreviousPage}
+            disabled={currentPage === 1}
+            className="disabled:opacity-50"
+          >
+            Previous
+          </Button>
+          <span>
+            Page {currentPage} of {totalPages}
+          </span>
+          <Button
+            onClick={handleNextPage}
+            disabled={currentPage === totalPages}
+            className="disabled:opacity-50"
+          >
+            Next
+          </Button>
         </div>
 
         <Dialog
