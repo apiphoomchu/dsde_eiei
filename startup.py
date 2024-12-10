@@ -85,35 +85,30 @@ def process_file(file_path):
         return {"file": file_path, "error": str(e)}
 
 df = pd.read_csv("streamlit_data/final_data.csv")
-spark_df = spark.createDataFrame(df)
+batch_size = 1000
 
-batch_size = 1000  # Adjust based on your Spark cluster's capacity
+# Convert Pandas DataFrame to Spark DataFrame in batches
+num_batches = len(df) // batch_size + (1 if len(df) % batch_size != 0 else 0)
 
-# Count total rows
-total_rows = spark_df.count()
-
-# Calculate the number of batches
-num_batches = (total_rows // batch_size) + (1 if total_rows % batch_size != 0 else 0)
-
+# Iterate through each batch
 for batch_num in range(num_batches):
-    # Filter the batch
-    start_index = batch_num * batch_size
-    end_index = start_index + batch_size
-    batch_df = spark_df.withColumn("row_index", lit(None).cast("integer")) \
-                       .rdd.zipWithIndex() \
-                       .toDF(["data", "index"]) \
-                       .filter((col("index") >= start_index) & (col("index") < end_index)) \
-                       .select("data.*")
+    # Get the batch of data from the original Pandas DataFrame
+    start_idx = batch_num * batch_size
+    end_idx = start_idx + batch_size
+    batch_df = df.iloc[start_idx:end_idx]
 
-    # Generate the embeddings and hash for the batch
-    df_with_embeddings = batch_df \
+    # Convert batch to Spark DataFrame
+    spark_df = spark.createDataFrame(batch_df)
+
+    # Generate embeddings and hash for the batch
+    df_with_embeddings = spark_df \
         .withColumn("embedding", generate_embedding_udf(
             concat_ws(" ", col("title"), col("abstract"), col("keywords").cast("string"))
         )) \
         .withColumn("hash", generate_hash_udf(col("title"), col("abstract"))) \
         .select("title", "keywords", "authors", "abstract", "embedding", "hash")
 
-    # Collect and process the batch
+    # Collect the batch into Python
     rows = df_with_embeddings.collect()
 
     for idx, row in enumerate(rows):
@@ -139,12 +134,12 @@ for batch_num in range(num_batches):
             authors=str(authors),
             abstract=abstract,
             embedding=np.array(embedding),
-            date=None, # I don't know how to get the date for now, may be we can infer later
-            pdf=None, # I don't know how to get the pdf link for now
+            date=None,  # Placeholder for date
+            pdf=None,   # Placeholder for PDF link
         )
         db.index(DocList[ResearchDoc]([doc]))
         print(f"Inserted: {title}")
 
     print(f"Processed batch {batch_num + 1}/{num_batches}.")
 
-print(f"Processed {total_rows} documents.")
+print(f"Processed {len(df)} documents.")
