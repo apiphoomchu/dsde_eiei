@@ -83,29 +83,8 @@ def process_file(file_path):
             return extract_relevant_info(json_data)
     except Exception as e:
         return {"file": file_path, "error": str(e)}
-    
-base_dir = "data/2021" # change this as your own risk gg
-    
-# Collect all file paths in the year-wise folders
-all_file_paths = []
-for root, dirs, files in os.walk(base_dir):
-    for file in files:
-        all_file_paths.append(os.path.join(root, file))
 
-# Initialize a list to store processed data
-processed_data_all = []
-
-# Loop through all collected file paths and process them
-for file_path in all_file_paths:
-    result = process_file(file_path)
-    processed_data_all.append(result)
-
-# Create a DataFrame from the processed data
-df = pd.DataFrame(processed_data_all)
-df.dropna(subset=["title", "abstract"], inplace=True)
-df.drop(columns=["error", "file"], inplace=True)
-
-# Convert the DataFrame to a Spark DataFrame
+df = pd.read_csv("streamlit_data/final_data.csv")
 spark_df = spark.createDataFrame(df)
 
 # Generate the embeddings and hash as new columns

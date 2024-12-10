@@ -92,6 +92,17 @@ services:
     volumes:
       - vectordb_data:/app/vectordb_workspace
 
+  nginx:
+    image: nginx:latest
+    container_name: nginx
+    ports:
+      - "80:80"
+    volumes:
+      - ./nginx.conf:/etc/nginx/conf.d/default.conf
+    depends_on:
+      - server
+      - streamlit
+      - spark-master
 
 volumes:
   spark-data:
