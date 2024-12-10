@@ -10,14 +10,14 @@ services:
       - SPARK_MASTER_HOST=spark-master
       - SPARK_MASTER_PORT=7077
     ports:
-      - "8080:8080"  # Web UI for the master node
-      - "7077:7077"  # Spark master communication
+      - "8080:8080" # Web UI for the master node
+      - "7077:7077" # Spark master communication
     volumes:
       - spark-data:/bitnami/spark
 
   # Spark Worker Node
   spark-worker-1:
-    build :
+    build:
       context: .
       dockerfile: Dockerfile.spark
     container_name: spark-worker-1
@@ -29,18 +29,18 @@ services:
     volumes:
       - spark-data:/bitnami/spark
 
-  # spark-worker-2:
-  #   build :
-  #     context: .
-  #     dockerfile: Dockerfile.spark
-  #   container_name: spark-worker-2
-  #   environment:
-  #     - SPARK_MODE=worker
-  #     - SPARK_MASTER_URL=spark://spark-master:7077
-  #   depends_on:
-  #     - spark-master
-  #   volumes:
-  #     - spark-data:/bitnami/spark
+  spark-worker-2:
+    build:
+      context: .
+      dockerfile: Dockerfile.spark
+    container_name: spark-worker-2
+    environment:
+      - SPARK_MODE=worker
+      - SPARK_MASTER_URL=spark://spark-master:7077
+    depends_on:
+      - spark-master
+    volumes:
+      - spark-data:/bitnami/spark
 
   # Vector Database
   vectordb:
@@ -81,7 +81,7 @@ services:
       - vectordb
       - spark-master
 
-  streamlit : 
+  streamlit:
     build:
       context: .
       dockerfile: Dockerfile.streamlit
